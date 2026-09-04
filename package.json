@@ -1,0 +1,13 @@
+{
+  "name": "lovelace-timetable-card",
+  "private": true,
+  "description": "Interactive family school timetable card for Home Assistant",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.10.0"
+  }
+}

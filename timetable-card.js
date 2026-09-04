@@ -665,7 +665,9 @@ class TimetableCardEditor extends HTMLElement {
         if(d.kids)     this._kids=normalizeKids(d.kids);
         if(d.subjects) { this._subjects=d.subjects; this._subjectMap=buildSubjectMap(d.subjects); }
         this._fire(); this._render();
-      } catch(_) {}
+      } catch(error) {
+        console.warn("Unable to import timetable backup.", error);
+      }
     };
     r.readAsText(file); el.value="";
   }
