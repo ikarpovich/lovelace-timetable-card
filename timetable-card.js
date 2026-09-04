@@ -73,7 +73,8 @@ const DEFAULT_KIDS = [
       {slot:3,time:"09:50",end:"10:35"},
       {slot:4,time:"10:35",end:"11:20"},
     ],
-    schedule:{Mon:[],Tue:[],Wed:[],Thu:[],Fri:[]},
+    days:5,
+    schedule:{Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]},
   },
 ];
 
@@ -88,9 +89,25 @@ const COLOR_PRESETS = [
   {color:"#2dd4bf",accent:"#0f766e",light:"#f0fdfa"},
 ];
 const EMOJIS  = ["⚡","🌸","⭐","🚀","🦋","🌿","🎯","🎨","🏆","🦊","🐬","🌈","🎸","🦄","🏄","🎭"];
-const DAYS    = ["Mon","Tue","Wed","Thu","Fri"];
-const DAY_FULL= ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+const DAYS    = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const DAY_FULL= ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const DAY_COUNTS = [5,6,7];
 const LEGACY_DAY_KEYS = { Mon:"Mo", Tue:"Di", Wed:"Mi", Thu:"Do", Fri:"Fr" };
+
+function normalizeDayCount(value) {
+  const count = Number(value);
+  return DAY_COUNTS.includes(count) ? count : 5;
+}
+
+function getVisibleDays(kid) {
+  return DAYS.slice(0,normalizeDayCount(kid?.days));
+}
+
+function getTodayIndex(days) {
+  const weekday = new Date().getDay();
+  const index = weekday===0 ? 6 : weekday-1;
+  return index<days.length ? index : -1;
+}
 
 function normalizeSchedule(schedule={}) {
   const source = schedule && typeof schedule === "object" ? schedule : {};
@@ -101,7 +118,7 @@ function normalizeSchedule(schedule={}) {
 }
 
 function normalizeKid(kid) {
-  return { ...kid, schedule:normalizeSchedule(kid.schedule) };
+  return { ...kid, days:normalizeDayCount(kid.days), schedule:normalizeSchedule(kid.schedule) };
 }
 
 function normalizeKids(kids) {
@@ -116,10 +133,11 @@ function buildTimetableHTML(kid, subjectMap, opts={}) {
   const {
     editable   = false,
     selected   = null,
-    todayColIdx= new Date().getDay()-1,
   } = opts;
+  const days      = getVisibleDays(kid);
+  const todayColIdx = opts.todayColIdx ?? getTodayIndex(days);
 
-  const maxSlot  = Math.max(...DAYS.flatMap(d=>(kid.schedule[d]||[]).map(l=>l.slot)),2);
+  const maxSlot  = Math.max(...days.flatMap(d=>(kid.schedule[d]||[]).map(l=>l.slot)),2);
   const visSlots = editable ? kid.slots : kid.slots.filter(s=>s.slot<=maxSlot);
   const css      = `--kid-color:${kid.color};--kid-accent:${kid.accent};--kid-light:${kid.light};`;
 
@@ -128,7 +146,7 @@ function buildTimetableHTML(kid, subjectMap, opts={}) {
       <table style="${css}">
         <thead><tr>
           <th class="th-corner"></th>
-          ${DAYS.map((d,i)=>`
+          ${days.map((d,i)=>`
             <th class="th-day ${i===todayColIdx?"today":""}" style="${css}">
               <div class="day-label">${DAY_FULL[i].slice(0,2)}<span>${DAY_FULL[i].slice(2)}</span></div>
               ${i===todayColIdx?`<div class="today-dot" style="background:${kid.color};box-shadow:0 0 5px ${kid.color}"></div>`:""}
@@ -146,7 +164,7 @@ function buildTimetableHTML(kid, subjectMap, opts={}) {
                   <div class="slot-time">${s.time}</div>
                   <div class="slot-end">${s.end}</div>
                 </td>
-                ${DAYS.map((day,colIdx)=>{
+                ${days.map((day,colIdx)=>{
                   const isToday = colIdx===todayColIdx;
                   const lesson  = (kid.schedule[day]||[]).find(l=>l.slot===s.slot);
                   const sc      = lesson?(subjectMap[lesson.subject]||FALLBACK):null;
@@ -271,6 +289,12 @@ const EDITOR_STYLES = `
   .color-dot.sel { border-color:var(--primary-text-color,#0f172a); transform:scale(1.15); }
   .kid-bar-del { padding:5px 10px; border-radius:8px; border:none; background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:800; cursor:pointer; font-family:inherit; }
   .kid-bar-slots-btn { padding:5px 10px; border-radius:8px; border:none; background:var(--secondary-background-color,#f1f5f9); color:var(--secondary-text-color); font-size:11px; font-weight:800; cursor:pointer; font-family:inherit; }
+  .day-count-control { display:flex; align-items:center; gap:7px; padding:3px 4px 3px 8px; border-radius:10px; background:var(--secondary-background-color,#f1f5f9); }
+  .day-count-label { font-size:11px; font-weight:800; color:var(--secondary-text-color); }
+  .day-count-options { display:flex; gap:2px; }
+  .day-count-option { min-width:25px; padding:4px 6px; border:none; border-radius:7px; background:transparent; color:var(--secondary-text-color); font-size:11px; font-weight:900; cursor:pointer; font-family:inherit; }
+  .day-count-option:hover { background:color-mix(in srgb,var(--kid-color,#60a5fa) 12%,transparent); }
+  .day-count-option.active { background:var(--kid-color,#60a5fa); color:white; box-shadow:0 1px 4px color-mix(in srgb,var(--kid-color,#60a5fa) 35%,transparent); }
   .emoji-picker { display:flex; flex-wrap:wrap; gap:5px; padding:10px 14px; background:var(--card-background-color,white); border-bottom:1px solid var(--divider-color,#e2e8f0); }
   .emoji-opt { width:32px; height:32px; border-radius:7px; border:2px solid transparent; background:transparent; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
   .emoji-opt.sel { border-color:var(--kid-color,#60a5fa); background:color-mix(in srgb,var(--kid-color,#60a5fa) 10%,transparent); }
@@ -423,6 +447,12 @@ class TimetableCardEditor extends HTMLElement {
               style="background:${c.color};${c.color===kid.color?`outline:2px solid ${c.color};outline-offset:2px`:""}"
               data-action="kid-color" data-ci="${i}"></div>`).join("")}
         </div>
+        <div class="day-count-control" style="${css}" title="Number of days shown">
+          <span class="day-count-label">Days</span>
+          <div class="day-count-options" role="group" aria-label="Number of days">
+            ${DAY_COUNTS.map(count=>`<button type="button" class="day-count-option ${normalizeDayCount(kid.days)===count?"active":""}" data-action="set-day-count" data-days="${count}" aria-pressed="${normalizeDayCount(kid.days)===count}">${count}</button>`).join("")}
+          </div>
+        </div>
         <button class="kid-bar-slots-btn" data-action="toggle-slots">⏱ Time slots</button>
         ${this._kids.length>1?`<button class="kid-bar-del" data-action="del-kid">Delete</button>`:""}
       </div>
@@ -530,9 +560,9 @@ class TimetableCardEditor extends HTMLElement {
 
     else if (a==="add-kid") {
       const preset=COLOR_PRESETS[this._kids.length%COLOR_PRESETS.length];
-      this._kids.push({name:"New child",age:"Grade 1",emoji:"⭐",...preset,
+      this._kids.push({name:"New child",age:"Grade 1",emoji:"⭐",...preset,days:5,
         slots:[{slot:1,time:"08:00",end:"08:45"},{slot:2,time:"08:45",end:"09:30"},{slot:3,time:"09:50",end:"10:35"},{slot:4,time:"10:35",end:"11:20"}],
-        schedule:{Mon:[],Tue:[],Wed:[],Thu:[],Fri:[]}});
+        schedule:{Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}});
       this._activeKid=this._kids.length-1; this._section="schedule";
       this._fire(); this._render();
     }
@@ -550,6 +580,10 @@ class TimetableCardEditor extends HTMLElement {
     else if (a==="kid-color") {
       const p=COLOR_PRESETS[parseInt(el.dataset.ci)];
       Object.assign(this._kids[this._activeKid],p); this._fire(); this._render();
+    }
+    else if (a==="set-day-count") {
+      this._kids[this._activeKid].days=normalizeDayCount(el.dataset.days);
+      this._fire(); this._render();
     }
     else if (a==="slot-del") {
       const i=parseInt(el.dataset.idx);
@@ -687,7 +721,8 @@ class TimetableCard extends HTMLElement {
 
   getCardSize() {
     const kid=this._kids[this._activeKid]||this._kids[0]; if(!kid) return 6;
-    const max=Math.max(...DAYS.flatMap(d=>(kid.schedule[d]||[]).map(l=>l.slot)),3);
+    const days=getVisibleDays(kid);
+    const max=Math.max(...days.flatMap(d=>(kid.schedule[d]||[]).map(l=>l.slot)),3);
     return Math.max(4,Math.ceil(max*0.8)+3);
   }
 
@@ -709,8 +744,9 @@ class TimetableCard extends HTMLElement {
   _buildHTML() {
     const kid=this._kids[this._activeKid]||this._kids[0];
     if(!kid) return "<p style='padding:16px'>Configure children in the editor.</p>";
-    const todayColIdx=new Date().getDay()-1;
-    const usedSubjects=[...new Set(DAYS.flatMap(d=>(kid.schedule[d]||[]).map(l=>l.subject)))];
+    const days=getVisibleDays(kid);
+    const todayColIdx=getTodayIndex(days);
+    const usedSubjects=[...new Set(days.flatMap(d=>(kid.schedule[d]||[]).map(l=>l.subject)))];
     const css=k=>`--kid-color:${k.color};--kid-accent:${k.accent};--kid-light:${k.light};`;
 
     return `
@@ -736,7 +772,7 @@ class TimetableCard extends HTMLElement {
         }).join("")}
       </div>
       <div class="day-summary" style="${css(kid)}">
-        ${DAYS.map((day,i)=>{
+        ${days.map((day,i)=>{
           const count=(kid.schedule[day]||[]).length;
           const isToday=i===todayColIdx;
           return `<div class="day-pill ${isToday?"today":""}" style="${css(kid)}">

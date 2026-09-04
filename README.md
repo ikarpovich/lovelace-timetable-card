@@ -68,6 +68,7 @@ The editor is split into tabs — one per child — plus a **🎨 Subjects** sec
 | Emoji        | Click to open emoji picker                       |
 | Name / Class | Click to edit, saves on blur (Tab or click away) |
 | Color dots   | Click to change color theme                      |
+| Days         | Select 5, 6, or 7 visible days for this child    |
 | ⏱ Time slots  | Toggle time slot editor                          |
 | **+** button | Add a new child                                  |
 
@@ -109,6 +110,7 @@ subjects:
 kids:
   - name: Lena
     age: Grade 3
+    days: 5 # visible days: 5, 6, or 7
     emoji: "🌸"
     color: "#f472b6" # tab accent color
     accent: "#be185d" # darker shade for text
@@ -157,6 +159,7 @@ kids:
 
   - name: Jonas
     age: Grade 5
+    days: 5
     emoji: "🚀"
     color: "#60a5fa"
     accent: "#1d4ed8"
@@ -183,7 +186,7 @@ kids:
       Fri: []
 ```
 
-Day keys use the English abbreviations `Mon`, `Tue`, `Wed`, `Thu`, and `Fri`. Existing configurations using the legacy `Mo`, `Di`, `Mi`, `Do`, and `Fr` keys are still imported automatically.
+Day keys use the English abbreviations `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, and `Sun`. Set `days` to `5`, `6`, or `7` for each child; six days includes Saturday and seven days includes Sunday. The **Days** control in the visual editor changes the setting for the selected child. Existing configurations using the legacy `Mo`, `Di`, `Mi`, `Do`, and `Fr` keys are still imported automatically.
 
 ### Child color presets
 
