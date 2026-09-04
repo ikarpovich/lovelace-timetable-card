@@ -31,6 +31,7 @@ Define your own subjects (Math, Class Council, Study Hall, Coach — whatever yo
 Everything is configurable through Home Assistant's built-in card editor:
 
 - Add & edit children (name, class, emoji, color)
+- Choose 5, 6, or 7 visible days per child
 - Set time slots per child
 - Fill in the timetable with tap-to-place or drag & drop
 - Manage subjects and their colors
@@ -71,6 +72,7 @@ subjects:
 kids:
   - name: Lena
     age: Grade 3
+    days: 5 # visible days: 5, 6, or 7
     emoji: "🌸"
     color: "#f472b6"
     accent: "#be185d"
@@ -94,7 +96,7 @@ kids:
       Fri: []
 ```
 
-Day keys use the English abbreviations `Mon`, `Tue`, `Wed`, `Thu`, and `Fri`. Existing configurations using the legacy `Mo`, `Di`, `Mi`, `Do`, and `Fr` keys are still imported automatically.
+Day keys use the English abbreviations `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, and `Sun`. Set `days` to `5`, `6`, or `7` for each child; six days includes Saturday and seven days includes Sunday. The **Days** control in the visual editor changes the setting for the selected child. Existing configurations using the legacy `Mo`, `Di`, `Mi`, `Do`, and `Fr` keys are still imported automatically.
 
 ---
 
