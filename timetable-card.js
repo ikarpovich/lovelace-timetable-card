@@ -41,31 +41,31 @@ const FALLBACK = { bg:"#f1f5f9", text:"#475569", border:"#cbd5e1" };
    DEFAULTS
 ═══════════════════════════════════════════════════ */
 const DEFAULT_SUBJECTS = [
-  { name:"Mathe",       color:"#1d4ed8" },
-  { name:"Deutsch",     color:"#854d0e" },
-  { name:"Englisch",    color:"#065f46" },
-  { name:"Sport",       color:"#5b21b6" },
-  { name:"Musik",       color:"#991b1b" },
-  { name:"Kunst",       color:"#9d174d" },
-  { name:"Sachkunde",   color:"#0f766e" },
-  { name:"Religion",    color:"#9a3412" },
-  { name:"Geschichte",  color:"#9f1239" },
-  { name:"Biologie",    color:"#166534" },
-  { name:"Physik",      color:"#075985" },
-  { name:"Chemie",      color:"#92400e" },
-  { name:"Französisch", color:"#6b21a8" },
-  { name:"Informatik",  color:"#3730a3" },
-  { name:"KlaRa",       color:"#7e22ce" },
-  { name:"LZ",          color:"#14532d" },
-  { name:"Coach",       color:"#881337" },
-  { name:"Ethik",       color:"#0369a1" },
-  { name:"Geographie",  color:"#15803d" },
-  { name:"Werken",      color:"#b45309" },
+  { name:"Math",              color:"#1d4ed8" },
+  { name:"German",            color:"#854d0e" },
+  { name:"English",           color:"#065f46" },
+  { name:"Physical Education",color:"#5b21b6" },
+  { name:"Music",             color:"#991b1b" },
+  { name:"Art",               color:"#9d174d" },
+  { name:"Science",           color:"#0f766e" },
+  { name:"Religious Education",color:"#9a3412" },
+  { name:"History",            color:"#9f1239" },
+  { name:"Biology",            color:"#166534" },
+  { name:"Physics",            color:"#075985" },
+  { name:"Chemistry",          color:"#92400e" },
+  { name:"French",             color:"#6b21a8" },
+  { name:"Computer Science",   color:"#3730a3" },
+  { name:"Class Council",      color:"#7e22ce" },
+  { name:"Study Hall",         color:"#14532d" },
+  { name:"Coach",              color:"#881337" },
+  { name:"Ethics",             color:"#0369a1" },
+  { name:"Geography",          color:"#15803d" },
+  { name:"Crafts",             color:"#b45309" },
 ];
 
 const DEFAULT_KIDS = [
   {
-    name:"Beispiel Kind", age:"1. Klasse", emoji:"⭐",
+    name:"Example Child", age:"Grade 1", emoji:"⭐",
     color:"#60a5fa", accent:"#1d4ed8", light:"#eff6ff",
     slots:[
       {slot:1,time:"08:00",end:"08:45"},
@@ -73,7 +73,7 @@ const DEFAULT_KIDS = [
       {slot:3,time:"09:50",end:"10:35"},
       {slot:4,time:"10:35",end:"11:20"},
     ],
-    schedule:{Mo:[],Di:[],Mi:[],Do:[],Fr:[]},
+    schedule:{Mon:[],Tue:[],Wed:[],Thu:[],Fri:[]},
   },
 ];
 
@@ -88,8 +88,25 @@ const COLOR_PRESETS = [
   {color:"#2dd4bf",accent:"#0f766e",light:"#f0fdfa"},
 ];
 const EMOJIS  = ["⚡","🌸","⭐","🚀","🦋","🌿","🎯","🎨","🏆","🦊","🐬","🌈","🎸","🦄","🏄","🎭"];
-const DAYS    = ["Mo","Di","Mi","Do","Fr"];
-const DAY_FULL= ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
+const DAYS    = ["Mon","Tue","Wed","Thu","Fri"];
+const DAY_FULL= ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+const LEGACY_DAY_KEYS = { Mon:"Mo", Tue:"Di", Wed:"Mi", Thu:"Do", Fri:"Fr" };
+
+function normalizeSchedule(schedule={}) {
+  const source = schedule && typeof schedule === "object" ? schedule : {};
+  return Object.fromEntries(DAYS.map(day=>[
+    day,
+    Array.isArray(source[day]) ? source[day] : (Array.isArray(source[LEGACY_DAY_KEYS[day]]) ? source[LEGACY_DAY_KEYS[day]] : []),
+  ]));
+}
+
+function normalizeKid(kid) {
+  return { ...kid, schedule:normalizeSchedule(kid.schedule) };
+}
+
+function normalizeKids(kids) {
+  return Array.isArray(kids) ? kids.map(normalizeKid) : [];
+}
 
 /* ═══════════════════════════════════════════════════
    SHARED TIMETABLE HTML BUILDER
@@ -324,7 +341,7 @@ class TimetableCardEditor extends HTMLElement {
 
   setConfig(config) {
     this._config     = config;
-    this._kids       = JSON.parse(JSON.stringify(config.kids     || DEFAULT_KIDS));
+    this._kids       = normalizeKids(JSON.parse(JSON.stringify(config.kids     || DEFAULT_KIDS)));
     this._subjects   = JSON.parse(JSON.stringify(config.subjects || DEFAULT_SUBJECTS));
     this._subjectMap = buildSubjectMap(this._subjects);
     this._render();
@@ -372,7 +389,7 @@ class TimetableCardEditor extends HTMLElement {
 
   _buildHTML() {
     const kid = this._kid();
-    if (!kid) return "<p style='padding:16px'>Kein Kind konfiguriert.</p>";
+    if (!kid) return "<p style='padding:16px'>No children configured.</p>";
 
     return `
       <!-- Tabs -->
@@ -384,7 +401,7 @@ class TimetableCardEditor extends HTMLElement {
             <div class="etab-avatar">${k.emoji}</div>
             ${k.name}
           </button>`).join("")}
-        <button class="etab-add" data-action="add-kid" title="Kind hinzufügen">+</button>
+        <button class="etab-add" data-action="add-kid" title="Add child">+</button>
 
       </div>
 
@@ -397,17 +414,17 @@ class TimetableCardEditor extends HTMLElement {
     return `
       <!-- Kid info bar -->
       <div class="kid-bar" style="${css}">
-        <div class="kid-bar-emoji" data-action="toggle-emoji" title="Emoji ändern">${kid.emoji}</div>
+        <div class="kid-bar-emoji" data-action="toggle-emoji" title="Change emoji">${kid.emoji}</div>
         <input class="kid-bar-name" data-action="kid-name" value="${kid.name}" placeholder="Name" style="color:${kid.accent}" tabindex="1">
-        <input class="kid-bar-age"  data-action="kid-age"  value="${kid.age}"  placeholder="Klasse" tabindex="2">
+        <input class="kid-bar-age"  data-action="kid-age"  value="${kid.age}"  placeholder="Grade" tabindex="2">
         <div class="color-dots">
           ${COLOR_PRESETS.map((c,i)=>`
             <div class="color-dot ${c.color===kid.color?"sel":""}"
               style="background:${c.color};${c.color===kid.color?`outline:2px solid ${c.color};outline-offset:2px`:""}"
               data-action="kid-color" data-ci="${i}"></div>`).join("")}
         </div>
-        <button class="kid-bar-slots-btn" data-action="toggle-slots">⏱ Zeiten</button>
-        ${this._kids.length>1?`<button class="kid-bar-del" data-action="del-kid">Löschen</button>`:""}
+        <button class="kid-bar-slots-btn" data-action="toggle-slots">⏱ Time slots</button>
+        ${this._kids.length>1?`<button class="kid-bar-del" data-action="del-kid">Delete</button>`:""}
       </div>
 
       <!-- Emoji picker -->
@@ -419,7 +436,7 @@ class TimetableCardEditor extends HTMLElement {
       <!-- Slots panel -->
       ${this._showSlots?`
         <div class="slots-panel">
-          <h4>UNTERRICHTSZEITEN</h4>
+          <h4>TIME SLOTS</h4>
           <div class="slots-grid">
             ${kid.slots.map((s,i)=>`
               <div class="slot-row">
@@ -430,7 +447,7 @@ class TimetableCardEditor extends HTMLElement {
                 <button class="slot-del" data-action="slot-del" data-idx="${i}">×</button>
               </div>`).join("")}
           </div>
-          <button class="slot-add-btn" data-action="slot-add">+ Stunde hinzufügen</button>
+          <button class="slot-add-btn" data-action="slot-add">+ Add time slot</button>
         </div>`:""}
 
       <!-- Timetable grid -->
@@ -440,8 +457,8 @@ class TimetableCardEditor extends HTMLElement {
       <div class="palette" style="${css}">
         <div class="palette-hint">
           ${this._selected
-            ? `"${this._selected}" ausgewählt — tippe auf ein Feld zum Eintragen`
-            : "FÄCHER — antippen zum Auswählen, dann ins Feld tippen · oder direkt ziehen"}
+            ? `"${this._selected}" selected — tap a cell to place it`
+            : "SUBJECTS — tap to select, then tap a cell · or drag directly"}
         </div>
         <div class="palette-chips">
           ${this._subjects.map(s=>{
@@ -452,26 +469,26 @@ class TimetableCardEditor extends HTMLElement {
               draggable="true" data-action="palette-drag" data-subject="${s.name}">${s.name}</div>`;
           }).join("")}
         </div>
-        ${this._selected?`<button class="clear-sel" data-action="clear-sel">✕ Auswahl aufheben</button>`:""}
+        ${this._selected?`<button class="clear-sel" data-action="clear-sel">✕ Clear selection</button>`:""}
       </div>
 
       <!-- Subjects management — always visible below palette -->
       <div class="subjects-panel">
-        <h4>🎨 FÄCHER VERWALTEN</h4>
+        <h4>🎨 MANAGE SUBJECTS</h4>
         <div class="subj-list">
           ${this._subjects.map((s,i)=>{
             const sc=buildSubjectStyle(s.color||"#64748b");
             return `
               <div class="subj-row">
-                <div class="subj-swatch" style="background:${sc.bg};border-color:${sc.border}" title="Farbe">
+                <div class="subj-swatch" style="background:${sc.bg};border-color:${sc.border}" title="Color">
                   <input type="color" value="${s.color||"#64748b"}" data-action="subj-color" data-idx="${i}">
                 </div>
-                <input class="subj-name" value="${s.name||""}" placeholder="Fachname" data-action="subj-name" data-idx="${i}" tabindex="${10+i}">
+                <input class="subj-name" value="${s.name||""}" placeholder="Subject name" data-action="subj-name" data-idx="${i}" tabindex="${10+i}">
                 <button class="subj-del" data-action="subj-del" data-idx="${i}">×</button>
               </div>`;
           }).join("")}
         </div>
-        <button class="subj-add" data-action="subj-add">+ Fach hinzufügen</button>
+        <button class="subj-add" data-action="subj-add">+ Add subject</button>
         <div class="preview-chips">
           ${this._subjects.map(s=>{
             const sc=buildSubjectStyle(s.color||"#64748b");
@@ -482,8 +499,8 @@ class TimetableCardEditor extends HTMLElement {
 
       <!-- Export / Import -->
       <div class="actions-bar">
-        <button class="action-btn" data-action="export">↓ Backup exportieren</button>
-        <button class="action-btn" data-action="import">↑ Backup importieren</button>
+        <button class="action-btn" data-action="export">↓ Export backup</button>
+        <button class="action-btn" data-action="import">↑ Import backup</button>
         <input type="file" accept=".json" data-action="import-file" style="display:none">
       </div>
     `;
@@ -513,9 +530,9 @@ class TimetableCardEditor extends HTMLElement {
 
     else if (a==="add-kid") {
       const preset=COLOR_PRESETS[this._kids.length%COLOR_PRESETS.length];
-      this._kids.push({name:"Neues Kind",age:"1. Klasse",emoji:"⭐",...preset,
+      this._kids.push({name:"New child",age:"Grade 1",emoji:"⭐",...preset,
         slots:[{slot:1,time:"08:00",end:"08:45"},{slot:2,time:"08:45",end:"09:30"},{slot:3,time:"09:50",end:"10:35"},{slot:4,time:"10:35",end:"11:20"}],
-        schedule:{Mo:[],Di:[],Mi:[],Do:[],Fr:[]}});
+        schedule:{Mon:[],Tue:[],Wed:[],Thu:[],Fri:[]}});
       this._activeKid=this._kids.length-1; this._section="schedule";
       this._fire(); this._render();
     }
@@ -611,7 +628,7 @@ class TimetableCardEditor extends HTMLElement {
     r.onload=ev=>{
       try {
         const d=JSON.parse(ev.target.result);
-        if(d.kids)     this._kids=d.kids;
+        if(d.kids)     this._kids=normalizeKids(d.kids);
         if(d.subjects) { this._subjects=d.subjects; this._subjectMap=buildSubjectMap(d.subjects); }
         this._fire(); this._render();
       } catch(_) {}
@@ -661,7 +678,7 @@ class TimetableCard extends HTMLElement {
 
   setConfig(config) {
     this._config   = config;
-    this._kids     = JSON.parse(JSON.stringify(config.kids     || DEFAULT_KIDS));
+    this._kids     = normalizeKids(JSON.parse(JSON.stringify(config.kids     || DEFAULT_KIDS)));
     this._subjects = buildSubjectMap(config.subjects || DEFAULT_SUBJECTS);
     this._render();
   }
@@ -691,7 +708,7 @@ class TimetableCard extends HTMLElement {
 
   _buildHTML() {
     const kid=this._kids[this._activeKid]||this._kids[0];
-    if(!kid) return "<p style='padding:16px'>Bitte Kinder im Editor konfigurieren.</p>";
+    if(!kid) return "<p style='padding:16px'>Configure children in the editor.</p>";
     const todayColIdx=new Date().getDay()-1;
     const usedSubjects=[...new Set(DAYS.flatMap(d=>(kid.schedule[d]||[]).map(l=>l.subject)))];
     const css=k=>`--kid-color:${k.color};--kid-accent:${k.accent};--kid-light:${k.light};`;
@@ -724,7 +741,7 @@ class TimetableCard extends HTMLElement {
           const isToday=i===todayColIdx;
           return `<div class="day-pill ${isToday?"today":""}" style="${css(kid)}">
             <span class="day-pill-label">${DAY_FULL[i].slice(0,2)}</span>
-            <span class="day-pill-count">${count} Std.</span>
+            <span class="day-pill-count">${count} ${count===1?"lesson":"lessons"}</span>
           </div>`;
         }).join("")}
       </div>
