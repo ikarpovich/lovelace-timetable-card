@@ -59,7 +59,7 @@ No YAML required. Everything works through the visual editor.
 
 ## 🖼️ Visual Editor
 
-The editor is split into tabs — one per child — plus a **🎨 Fächer** tab for subject management.
+The editor is split into tabs — one per child — plus a **🎨 Subjects** section for subject management.
 
 ### Per-child configuration
 
@@ -68,7 +68,7 @@ The editor is split into tabs — one per child — plus a **🎨 Fächer** tab 
 | Emoji        | Click to open emoji picker                       |
 | Name / Class | Click to edit, saves on blur (Tab or click away) |
 | Color dots   | Click to change color theme                      |
-| ⏱ Zeiten     | Toggle time slot editor                          |
+| ⏱ Time slots  | Toggle time slot editor                          |
 | **+** button | Add a new child                                  |
 
 ### Filling in the timetable
@@ -77,7 +77,7 @@ The editor is split into tabs — one per child — plus a **🎨 Fächer** tab 
 - **Drag & drop**: drag from palette directly into a cell
 - **Remove**: tap the × on a filled cell
 
-### Managing subjects (🎨 Fächer tab)
+### Managing subjects (🎨 Subjects section)
 
 - Click the colored circle to open a color picker
 - Edit name directly in the field
@@ -92,23 +92,23 @@ The editor is split into tabs — one per child — plus a **🎨 Fächer** tab 
 type: custom:timetable-card
 
 subjects:
-  - name: Mathe
+  - name: Math
     color: "#1d4ed8"
-  - name: Deutsch
+  - name: German
     color: "#854d0e"
-  - name: Englisch
+  - name: English
     color: "#065f46"
-  - name: Sport
+  - name: Physical Education
     color: "#5b21b6"
-  - name: KlaRa # custom school-specific subjects
+  - name: Class Council # custom school-specific subjects
     color: "#7e22ce"
-  - name: LZ
+  - name: Study Hall
     color: "#14532d"
   # add as many as you need...
 
 kids:
   - name: Lena
-    age: 3. Klasse
+    age: Grade 3
     emoji: "🌸"
     color: "#f472b6" # tab accent color
     accent: "#be185d" # darker shade for text
@@ -131,32 +131,32 @@ kids:
       #   time: "14:00"
       #   end: "14:45"
     schedule:
-      Mo:
+      Mon:
         - slot: 1
-          subject: Deutsch
+          subject: German
         - slot: 2
-          subject: Mathe
+          subject: Math
         - slot: 3
-          subject: Sport
-      Di:
+          subject: Physical Education
+      Tue:
         - slot: 1
-          subject: Mathe
+          subject: Math
         - slot: 2
-          subject: Englisch
-      Mi: []
-      Do:
+          subject: English
+      Wed: []
+      Thu:
         - slot: 1
-          subject: Kunst
+          subject: Art
         - slot: 2
-          subject: Musik
-      Fr:
+          subject: Music
+      Fri:
         - slot: 1
-          subject: Deutsch
+          subject: German
         - slot: 2
-          subject: Sport
+          subject: Physical Education
 
   - name: Jonas
-    age: 5. Klasse
+    age: Grade 5
     emoji: "🚀"
     color: "#60a5fa"
     accent: "#1d4ed8"
@@ -172,16 +172,18 @@ kids:
         time: "09:45"
         end: "10:30"
     schedule:
-      Mo:
+      Mon:
         - slot: 1
-          subject: Englisch
+          subject: English
         - slot: 2
-          subject: Mathe
-      Di: []
-      Mi: []
-      Do: []
-      Fr: []
+          subject: Math
+      Tue: []
+      Wed: []
+      Thu: []
+      Fri: []
 ```
+
+Day keys use the English abbreviations `Mon`, `Tue`, `Wed`, `Thu`, and `Fri`. Existing configurations using the legacy `Mo`, `Di`, `Mi`, `Do`, and `Fr` keys are still imported automatically.
 
 ### Child color presets
 
@@ -202,14 +204,14 @@ kids:
 
 Timetable data is stored in the Lovelace config and included in every HA backup automatically.
 
-For manual backup: **↓ Backup exportieren** in the editor downloads a JSON file.
-To restore: **↑ Backup importieren** reads it back in.
+For manual backup: **↓ Export backup** in the editor downloads a JSON file.
+To restore: **↑ Import backup** reads it back in.
 
 ---
 
 ## 🗺️ Roadmap
 
-- [ ] English language support
+- [x] English language support
 - [ ] Configurable break line positions (currently fixed after slots 2 and 4)
 - [ ] Week A/B alternating schedules
 - [ ] Holiday / no-school day indicators

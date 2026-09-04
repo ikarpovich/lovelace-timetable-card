@@ -25,7 +25,7 @@ Each child gets their own tab with a personal color theme and emoji. Switch betw
 Every child has their own time slots — because not every school starts at the same time.
 
 **🎨 Fully customizable subjects**
-Define your own subjects (Mathe, KlaRa, LZ, Coach — whatever your school uses) with individual colors. One click in the visual editor, no YAML needed.
+Define your own subjects (Math, Class Council, Study Hall, Coach — whatever your school uses) with individual colors. One click in the visual editor, no YAML needed.
 
 **✏️ Visual editor — no YAML required**
 Everything is configurable through Home Assistant's built-in card editor:
@@ -62,15 +62,15 @@ No YAML needed. Everything works through the visual editor.
 ```yaml
 type: custom:timetable-card
 subjects:
-  - name: Mathe
+  - name: Math
     color: "#1d4ed8"
-  - name: Deutsch
+  - name: German
     color: "#854d0e"
-  - name: Englisch
+  - name: English
     color: "#065f46"
 kids:
   - name: Lena
-    age: 3. Klasse
+    age: Grade 3
     emoji: "🌸"
     color: "#f472b6"
     accent: "#be185d"
@@ -83,16 +83,18 @@ kids:
         time: "08:45"
         end: "09:30"
     schedule:
-      Mo:
+      Mon:
         - slot: 1
-          subject: Deutsch
+          subject: German
         - slot: 2
-          subject: Mathe
-      Di: []
-      Mi: []
-      Do: []
-      Fr: []
+          subject: Math
+      Tue: []
+      Wed: []
+      Thu: []
+      Fri: []
 ```
+
+Day keys use the English abbreviations `Mon`, `Tue`, `Wed`, `Thu`, and `Fri`. Existing configurations using the legacy `Mo`, `Di`, `Mi`, `Do`, and `Fr` keys are still imported automatically.
 
 ---
 
@@ -105,13 +107,12 @@ Just add more slots with higher numbers (`slot: 7`, `slot: 8`, ...). The card ad
 No problem — break lines are shown automatically after slots 2 and 4. Each child's slots are completely independent.
 
 **Backup your timetable?**
-Use the **↓ Backup exportieren** button in the editor. This downloads a JSON file you can restore anytime via **↑ Backup importieren**.
+Use the **↓ Export backup** button in the editor. This downloads a JSON file you can restore anytime via **↑ Import backup**.
 
 ---
 
 ## 🗺️ Planned Features
 
-- 🌍 English language support
 - 📅 Week A/B alternating schedules
 - 🎉 Holiday & no-school day markers
 - ⚙️ Configurable break line positions
