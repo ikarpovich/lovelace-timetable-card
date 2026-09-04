@@ -120,12 +120,12 @@ Use the **↓ Backup exportieren** button in the editor. This downloads a JSON f
 
 ## ☕ Support the Project
 
-If this card is useful for your family, consider buying me a coffee:
+If this card is useful for your family, consider supporting the project:
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/aykay35)
+[Support the project on GitHub](https://github.com/sponsors/ikarpovich)
 
 ---
 
 ## 📄 Full Documentation
 
-For the complete documentation including the full YAML reference, see the [README on GitHub](https://github.com/AyKay35/lovelace-timetable-card#readme).
+For the complete documentation including the full YAML reference, see the [README on GitHub](https://github.com/ikarpovich/lovelace-timetable-card#readme).
