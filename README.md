@@ -1,11 +1,13 @@
 # 📅 Timetable Card for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-[![Version](https://img.shields.io/github/v/release/AyKay35/lovelace-timetable-card)](https://github.com/AyKay35/lovelace-timetable-card/releases)
+[![Version](https://img.shields.io/github/v/release/ikarpovich/lovelace-timetable-card)](https://github.com/ikarpovich/lovelace-timetable-card/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/AyKay35/lovelace-timetable-card?style=flat)](https://github.com/AyKay35/lovelace-timetable-card/stargazers)
+[![Stars](https://img.shields.io/github/stars/ikarpovich/lovelace-timetable-card?style=flat)](https://github.com/ikarpovich/lovelace-timetable-card/stargazers)
 
 A beautiful, interactive school timetable card for [Home Assistant](https://www.home-assistant.io/) — perfect for families with multiple children at different schools.
+
+Originally created by [AyKay35](https://github.com/AyKay35). Thanks to the original author for the foundation of this project.
 
 ---
 
@@ -30,7 +32,7 @@ A beautiful, interactive school timetable card for [Home Assistant](https://www.
 1. Open **HACS** → **Frontend** → three-dot menu (⋮) → **Custom repositories**
 2. Add:
    ```
-   https://github.com/AyKay35/lovelace-timetable-card
+   https://github.com/ikarpovich/lovelace-timetable-card
    ```
    Category: **Dashboard**
 3. Find **Timetable Card** → **Download**
@@ -38,7 +40,7 @@ A beautiful, interactive school timetable card for [Home Assistant](https://www.
 
 ### Manual
 
-1. Download `timetable-card.js` from the [latest release](https://github.com/AyKay35/lovelace-timetable-card/releases)
+1. Download `timetable-card.js` from the [latest release](https://github.com/ikarpovich/lovelace-timetable-card/releases)
 2. Copy to `/config/www/timetable-card.js`
 3. Add as Lovelace resource: `/local/timetable-card.js` (JavaScript module)
 
@@ -224,10 +226,10 @@ Pull requests are welcome! Please open an issue first to discuss what you'd like
 
 If this card is useful for your family:
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/aykay35)
+[Support the project on GitHub](https://github.com/sponsors/ikarpovich)
 
 ---
 
 ## 📄 License
 
-MIT © [AyKay35](https://github.com/AyKay35)
+MIT © [ikarpovich](https://github.com/ikarpovich)
