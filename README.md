@@ -1,6 +1,7 @@
 # 📅 Timetable Card for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![CI](https://github.com/ikarpovich/lovelace-timetable-card/actions/workflows/ci.yml/badge.svg)](https://github.com/ikarpovich/lovelace-timetable-card/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/github/v/release/ikarpovich/lovelace-timetable-card)](https://github.com/ikarpovich/lovelace-timetable-card/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/ikarpovich/lovelace-timetable-card?style=flat)](https://github.com/ikarpovich/lovelace-timetable-card/stargazers)
