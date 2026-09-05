@@ -56,6 +56,8 @@ Originally created by [AyKay35](https://github.com/AyKay35). Thanks to the origi
 
 No YAML required. Everything works through the visual editor.
 
+The card shows the timetable only by default. Use the **Subjects** and **Lesson counts** display toggles in the visual editor if you want the sections below the table.
+
 ---
 
 ## 🖼️ Visual Editor
@@ -92,6 +94,8 @@ The editor is split into tabs — one per child — plus a **🎨 Subjects** sec
 
 ```yaml
 type: custom:timetable-card
+show_subject_legend: false # show subject pills below the table
+show_day_summary: false # show lesson counts below the table
 
 subjects:
   - name: Math
