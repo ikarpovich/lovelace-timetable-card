@@ -18,6 +18,8 @@ function loadInternals() {
       buildTimetableHTML,
       getVisibleDays,
       normalizeKid,
+      normalizeDisplayConfig,
+      TimetableCard,
     };
   `, context);
   return context.__timetableTest;
@@ -65,4 +67,33 @@ test("renders the selected number of day columns", () => {
     const html = buildTimetableHTML({ ...baseKid, days }, {});
     assert.equal((html.match(/class="th-day/g) || []).length, days);
   }
+});
+
+test("hides optional display sections by default and shows enabled sections", () => {
+  const { TimetableCard, normalizeDisplayConfig } = loadInternals();
+  const kid = {
+    days: 5,
+    color: "#60a5fa",
+    accent: "#1d4ed8",
+    light: "#eff6ff",
+    slots: [{ slot: 1, time: "08:00", end: "08:45" }],
+    schedule: { Mon: [{ slot: 1, subject: "Math" }] },
+  };
+
+  function render(config) {
+    const card = Object.create(TimetableCard.prototype);
+    card._config = normalizeDisplayConfig(config);
+    card._kids = [kid];
+    card._subjects = {};
+    card._activeKid = 0;
+    return card._buildHTML();
+  }
+
+  const tableOnly = render({});
+  assert.doesNotMatch(tableOnly, /class="legend"/);
+  assert.doesNotMatch(tableOnly, /class="day-summary"/);
+
+  const withSections = render({ show_subject_legend: true, show_day_summary: true });
+  assert.match(withSections, /class="legend"/);
+  assert.match(withSections, /class="day-summary"/);
 });

@@ -56,12 +56,16 @@ After installation, add the card to your dashboard:
 
 No YAML needed. Everything works through the visual editor.
 
+The card shows the timetable only by default. Use the **Subjects** and **Lesson counts** display toggles in the visual editor if you want the sections below the table.
+
 ---
 
 ## ⚙️ Minimal YAML (for reference)
 
 ```yaml
 type: custom:timetable-card
+show_subject_legend: false # show subject pills below the table
+show_day_summary: false # show lesson counts below the table
 subjects:
   - name: Math
     color: "#1d4ed8"

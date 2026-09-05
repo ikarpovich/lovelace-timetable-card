@@ -93,6 +93,10 @@ const DAYS    = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 const DAY_FULL= ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 const DAY_COUNTS = [5,6,7];
 const LEGACY_DAY_KEYS = { Mon:"Mo", Tue:"Di", Wed:"Mi", Thu:"Do", Fri:"Fr" };
+const DISPLAY_OPTIONS = [
+  { key:"show_subject_legend", label:"Subjects" },
+  { key:"show_day_summary", label:"Lesson counts" },
+];
 
 function normalizeDayCount(value) {
   const count = Number(value);
@@ -123,6 +127,15 @@ function normalizeKid(kid) {
 
 function normalizeKids(kids) {
   return Array.isArray(kids) ? kids.map(normalizeKid) : [];
+}
+
+function normalizeDisplayConfig(config={}) {
+  const source = config && typeof config === "object" ? config : {};
+  return {
+    ...source,
+    show_subject_legend:source.show_subject_legend===true,
+    show_day_summary:source.show_day_summary===true,
+  };
 }
 
 /* ═══════════════════════════════════════════════════
@@ -295,6 +308,11 @@ const EDITOR_STYLES = `
   .day-count-option { min-width:25px; padding:4px 6px; border:none; border-radius:7px; background:transparent; color:var(--secondary-text-color); font-size:11px; font-weight:900; cursor:pointer; font-family:inherit; }
   .day-count-option:hover { background:color-mix(in srgb,var(--kid-color,#60a5fa) 12%,transparent); }
   .day-count-option.active { background:var(--kid-color,#60a5fa); color:white; box-shadow:0 1px 4px color-mix(in srgb,var(--kid-color,#60a5fa) 35%,transparent); }
+  .display-options { display:flex; align-items:center; gap:7px; padding:8px 14px; border-bottom:1px solid var(--divider-color,#e2e8f0); background:var(--card-background-color,white); flex-wrap:wrap; }
+  .display-options-label { font-size:11px; font-weight:800; color:var(--secondary-text-color); }
+  .display-option { padding:5px 10px; border:1.5px solid var(--divider-color,#e2e8f0); border-radius:8px; background:var(--card-background-color,white); color:var(--secondary-text-color); font-size:11px; font-weight:800; cursor:pointer; font-family:inherit; transition:all 0.15s; }
+  .display-option:hover { border-color:var(--kid-color,#60a5fa); color:var(--kid-accent,#1d4ed8); }
+  .display-option.active { border-color:var(--kid-color,#60a5fa); background:color-mix(in srgb,var(--kid-color,#60a5fa) 14%,transparent); color:var(--kid-accent,#1d4ed8); }
   .emoji-picker { display:flex; flex-wrap:wrap; gap:5px; padding:10px 14px; background:var(--card-background-color,white); border-bottom:1px solid var(--divider-color,#e2e8f0); }
   .emoji-opt { width:32px; height:32px; border-radius:7px; border:2px solid transparent; background:transparent; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
   .emoji-opt.sel { border-color:var(--kid-color,#60a5fa); background:color-mix(in srgb,var(--kid-color,#60a5fa) 10%,transparent); }
@@ -364,7 +382,7 @@ class TimetableCardEditor extends HTMLElement {
   }
 
   setConfig(config) {
-    this._config     = config;
+    this._config     = normalizeDisplayConfig(config);
     this._kids       = normalizeKids(JSON.parse(JSON.stringify(config.kids     || DEFAULT_KIDS)));
     this._subjects   = JSON.parse(JSON.stringify(config.subjects || DEFAULT_SUBJECTS));
     this._subjectMap = buildSubjectMap(this._subjects);
@@ -455,6 +473,15 @@ class TimetableCardEditor extends HTMLElement {
         </div>
         <button class="kid-bar-slots-btn" data-action="toggle-slots">⏱ Time slots</button>
         ${this._kids.length>1?`<button class="kid-bar-del" data-action="del-kid">Delete</button>`:""}
+      </div>
+
+      <!-- Display options -->
+      <div class="display-options" style="${css}" role="group" aria-label="Card display options">
+        <span class="display-options-label">Show</span>
+        ${DISPLAY_OPTIONS.map(option=>{
+          const active=this._config[option.key]===true;
+          return `<button type="button" class="display-option ${active?"active":""}" data-action="toggle-display" data-option="${option.key}" aria-pressed="${active}">${option.label}</button>`;
+        }).join("")}
       </div>
 
       <!-- Emoji picker -->
@@ -585,6 +612,12 @@ class TimetableCardEditor extends HTMLElement {
       this._kids[this._activeKid].days=normalizeDayCount(el.dataset.days);
       this._fire(); this._render();
     }
+    else if (a==="toggle-display") {
+      const option=DISPLAY_OPTIONS.find(item=>item.key===el.dataset.option)?.key;
+      if(!option) return;
+      this._config={...this._config,[option]:!this._config[option]};
+      this._fire(); this._render();
+    }
     else if (a==="slot-del") {
       const i=parseInt(el.dataset.idx);
       this._kids[this._activeKid].slots=this._kids[this._activeKid].slots
@@ -709,11 +742,11 @@ class TimetableCard extends HTMLElement {
   }
 
   static getConfigElement() { return document.createElement("timetable-card-editor"); }
-  static getStubConfig()    { return {subjects:DEFAULT_SUBJECTS, kids:DEFAULT_KIDS}; }
+  static getStubConfig()    { return {show_subject_legend:false, show_day_summary:false, subjects:DEFAULT_SUBJECTS, kids:DEFAULT_KIDS}; }
   static getLayoutOptions() { return {grid_columns:"full", grid_rows:"auto"}; }
 
   setConfig(config) {
-    this._config   = config;
+    this._config   = normalizeDisplayConfig(config);
     this._kids     = normalizeKids(JSON.parse(JSON.stringify(config.kids     || DEFAULT_KIDS)));
     this._subjects = buildSubjectMap(config.subjects || DEFAULT_SUBJECTS);
     this._render();
@@ -767,22 +800,24 @@ class TimetableCard extends HTMLElement {
 
       ${buildTimetableHTML(kid, this._subjects, {editable:false, todayColIdx})}
 
-      <div class="legend">
-        ${usedSubjects.map(name=>{
-          const sc=this._subjects[name]||FALLBACK;
-          return `<div class="legend-chip" style="background:${sc.bg};color:${sc.text};border-color:${sc.border}">${name}</div>`;
-        }).join("")}
-      </div>
-      <div class="day-summary" style="${css(kid)}">
-        ${days.map((day,i)=>{
-          const count=(kid.schedule[day]||[]).length;
-          const isToday=i===todayColIdx;
-          return `<div class="day-pill ${isToday?"today":""}" style="${css(kid)}">
-            <span class="day-pill-label">${DAY_FULL[i].slice(0,2)}</span>
-            <span class="day-pill-count">${count} ${count===1?"lesson":"lessons"}</span>
-          </div>`;
-        }).join("")}
-      </div>
+      ${this._config.show_subject_legend?`
+        <div class="legend">
+          ${usedSubjects.map(name=>{
+            const sc=this._subjects[name]||FALLBACK;
+            return `<div class="legend-chip" style="background:${sc.bg};color:${sc.text};border-color:${sc.border}">${name}</div>`;
+          }).join("")}
+        </div>`:""}
+      ${this._config.show_day_summary?`
+        <div class="day-summary" style="${css(kid)}">
+          ${days.map((day,i)=>{
+            const count=(kid.schedule[day]||[]).length;
+            const isToday=i===todayColIdx;
+            return `<div class="day-pill ${isToday?"today":""}" style="${css(kid)}">
+              <span class="day-pill-label">${DAY_FULL[i].slice(0,2)}</span>
+              <span class="day-pill-count">${count} ${count===1?"lesson":"lessons"}</span>
+            </div>`;
+          }).join("")}
+        </div>`:""}
     `;
   }
 }
