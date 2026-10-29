@@ -133,6 +133,7 @@ function normalizeDisplayConfig(config={}) {
   const source = config && typeof config === "object" ? config : {};
   return {
     ...source,
+    show_header:source.show_header!==false,
     show_subject_legend:source.show_subject_legend===true,
     show_day_summary:source.show_day_summary===true,
   };
@@ -313,6 +314,9 @@ const EDITOR_STYLES = `
   .display-option { padding:5px 10px; border:1.5px solid var(--divider-color,#e2e8f0); border-radius:8px; background:var(--card-background-color,white); color:var(--secondary-text-color); font-size:11px; font-weight:800; cursor:pointer; font-family:inherit; transition:all 0.15s; }
   .display-option:hover { border-color:var(--kid-color,#60a5fa); color:var(--kid-accent,#1d4ed8); }
   .display-option.active { border-color:var(--kid-color,#60a5fa); background:color-mix(in srgb,var(--kid-color,#60a5fa) 14%,transparent); color:var(--kid-accent,#1d4ed8); }
+  .display-checkbox { display:flex; align-items:center; gap:6px; margin-left:auto; padding:5px 9px; border:1.5px solid var(--divider-color,#e2e8f0); border-radius:8px; color:var(--secondary-text-color); font-size:11px; font-weight:800; cursor:pointer; }
+  .display-checkbox.active { border-color:var(--kid-color,#60a5fa); background:color-mix(in srgb,var(--kid-color,#60a5fa) 14%,transparent); color:var(--kid-accent,#1d4ed8); }
+  .display-checkbox input { margin:0; accent-color:var(--kid-color,#60a5fa); cursor:pointer; }
   .emoji-picker { display:flex; flex-wrap:wrap; gap:5px; padding:10px 14px; background:var(--card-background-color,white); border-bottom:1px solid var(--divider-color,#e2e8f0); }
   .emoji-opt { width:32px; height:32px; border-radius:7px; border:2px solid transparent; background:transparent; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
   .emoji-opt.sel { border-color:var(--kid-color,#60a5fa); background:color-mix(in srgb,var(--kid-color,#60a5fa) 10%,transparent); }
@@ -482,6 +486,10 @@ class TimetableCardEditor extends HTMLElement {
           const active=this._config[option.key]===true;
           return `<button type="button" class="display-option ${active?"active":""}" data-action="toggle-display" data-option="${option.key}" aria-pressed="${active}">${option.label}</button>`;
         }).join("")}
+        <label class="display-checkbox ${this._config.show_header?"active":""}" data-action="toggle-display" data-option="show_header">
+          <input type="checkbox" ${this._config.show_header?"checked":""}>
+          <span>Child header</span>
+        </label>
       </div>
 
       <!-- Emoji picker -->
@@ -742,7 +750,7 @@ class TimetableCard extends HTMLElement {
   }
 
   static getConfigElement() { return document.createElement("timetable-card-editor"); }
-  static getStubConfig()    { return {show_subject_legend:false, show_day_summary:false, subjects:DEFAULT_SUBJECTS, kids:DEFAULT_KIDS}; }
+  static getStubConfig()    { return {show_header:true, show_subject_legend:false, show_day_summary:false, subjects:DEFAULT_SUBJECTS, kids:DEFAULT_KIDS}; }
   static getLayoutOptions() { return {grid_columns:"full", grid_rows:"auto"}; }
 
   setConfig(config) {
@@ -785,18 +793,20 @@ class TimetableCard extends HTMLElement {
     const css=k=>`--kid-color:${k.color};--kid-accent:${k.accent};--kid-light:${k.light};`;
 
     return `
-      <div class="header">
-        <div class="tabs">
-          ${this._kids.map((k,i)=>`
-            <div class="tab ${this._activeKid===i?"active":""}" style="${css(k)}" data-action="tab" data-idx="${i}">
-              <div class="tab-avatar">${k.emoji}</div>
-              <div>
-                <div class="tab-name">${k.name}</div>
-                <div class="tab-age">${k.age}</div>
-              </div>
-            </div>`).join("")}
+      ${this._config.show_header?`
+        <div class="header">
+          <div class="tabs">
+            ${this._kids.map((k,i)=>`
+              <div class="tab ${this._activeKid===i?"active":""}" style="${css(k)}" data-action="tab" data-idx="${i}">
+                <div class="tab-avatar">${k.emoji}</div>
+                <div>
+                  <div class="tab-name">${k.name}</div>
+                  <div class="tab-age">${k.age}</div>
+                </div>
+              </div>`).join("")}
+          </div>
         </div>
-      </div>
+      `:""}
 
       ${buildTimetableHTML(kid, this._subjects, {editable:false, todayColIdx})}
 

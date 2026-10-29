@@ -56,7 +56,7 @@ Originally created by [AyKay35](https://github.com/AyKay35). Thanks to the origi
 
 No YAML required. Everything works through the visual editor.
 
-The card shows the timetable only by default. Use the **Subjects** and **Lesson counts** display toggles in the visual editor if you want the sections below the table.
+The card shows the timetable only by default. Use the **Subjects** and **Lesson counts** display toggles in the visual editor if you want the sections below the table. The **Child header** checkbox controls the name/tab header above the table; hiding it also hides child tabs, so use that option when the card is for a single child.
 
 ---
 
@@ -73,6 +73,7 @@ The editor is split into tabs — one per child — plus a **🎨 Subjects** sec
 | Color dots   | Click to change color theme                      |
 | Days         | Select 5, 6, or 7 visible days for this child    |
 | ⏱ Time slots  | Toggle time slot editor                          |
+| Child header | Show or hide the name/tab header                 |
 | **+** button | Add a new child                                  |
 
 ### Filling in the timetable
@@ -96,6 +97,7 @@ The editor is split into tabs — one per child — plus a **🎨 Subjects** sec
 type: custom:timetable-card
 show_subject_legend: false # show subject pills below the table
 show_day_summary: false # show lesson counts below the table
+show_header: true # show the child name/tab header
 
 subjects:
   - name: Math
