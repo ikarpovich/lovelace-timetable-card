@@ -56,7 +56,7 @@ After installation, add the card to your dashboard:
 
 No YAML needed. Everything works through the visual editor.
 
-The card shows the timetable only by default. Use the **Subjects** and **Lesson counts** display toggles in the visual editor if you want the sections below the table.
+The card shows the timetable only by default. Use the **Subjects** and **Lesson counts** display toggles in the visual editor if you want the sections below the table. The **Child header** checkbox controls the name/tab header above the table; hiding it also hides child tabs, so use that option when the card is for a single child.
 
 ---
 
@@ -66,6 +66,7 @@ The card shows the timetable only by default. Use the **Subjects** and **Lesson 
 type: custom:timetable-card
 show_subject_legend: false # show subject pills below the table
 show_day_summary: false # show lesson counts below the table
+show_header: true # show the child name/tab header
 subjects:
   - name: Math
     color: "#1d4ed8"

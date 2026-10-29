@@ -90,10 +90,13 @@ test("hides optional display sections by default and shows enabled sections", ()
   }
 
   const tableOnly = render({});
+  assert.match(tableOnly, /class="header"/);
   assert.doesNotMatch(tableOnly, /class="legend"/);
   assert.doesNotMatch(tableOnly, /class="day-summary"/);
 
   const withSections = render({ show_subject_legend: true, show_day_summary: true });
   assert.match(withSections, /class="legend"/);
   assert.match(withSections, /class="day-summary"/);
+
+  assert.doesNotMatch(render({ show_header: false }), /class="header"/);
 });
