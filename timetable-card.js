@@ -97,6 +97,7 @@ const DISPLAY_OPTIONS = [
   { key:"show_subject_legend", label:"Subjects" },
   { key:"show_day_summary", label:"Lesson counts" },
 ];
+const DISPLAY_OPTION_KEYS = [...DISPLAY_OPTIONS.map(option=>option.key), "show_header"];
 
 function normalizeDayCount(value) {
   const count = Number(value);
@@ -131,11 +132,13 @@ function normalizeKids(kids) {
 
 function normalizeDisplayConfig(config={}) {
   const source = config && typeof config === "object" ? config : {};
+  const isTrue = value => value===true || value==="true";
+  const isFalse = value => value===false || value==="false";
   return {
     ...source,
-    show_header:source.show_header!==false,
-    show_subject_legend:source.show_subject_legend===true,
-    show_day_summary:source.show_day_summary===true,
+    show_header:!isFalse(source.show_header),
+    show_subject_legend:isTrue(source.show_subject_legend),
+    show_day_summary:isTrue(source.show_day_summary),
   };
 }
 
@@ -621,7 +624,7 @@ class TimetableCardEditor extends HTMLElement {
       this._fire(); this._render();
     }
     else if (a==="toggle-display") {
-      const option=DISPLAY_OPTIONS.find(item=>item.key===el.dataset.option)?.key;
+      const option=DISPLAY_OPTION_KEYS.includes(el.dataset.option) ? el.dataset.option : null;
       if(!option) return;
       this._config={...this._config,[option]:!this._config[option]};
       this._fire(); this._render();

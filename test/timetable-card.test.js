@@ -19,6 +19,7 @@ function loadInternals() {
       getVisibleDays,
       normalizeKid,
       normalizeDisplayConfig,
+      DISPLAY_OPTION_KEYS,
       TimetableCard,
     };
   `, context);
@@ -70,7 +71,7 @@ test("renders the selected number of day columns", () => {
 });
 
 test("hides optional display sections by default and shows enabled sections", () => {
-  const { TimetableCard, normalizeDisplayConfig } = loadInternals();
+  const { TimetableCard, normalizeDisplayConfig, DISPLAY_OPTION_KEYS } = loadInternals();
   const kid = {
     days: 5,
     color: "#60a5fa",
@@ -99,4 +100,6 @@ test("hides optional display sections by default and shows enabled sections", ()
   assert.match(withSections, /class="day-summary"/);
 
   assert.doesNotMatch(render({ show_header: false }), /class="header"/);
+  assert.doesNotMatch(render({ show_header: "false" }), /class="header"/);
+  assert.ok(DISPLAY_OPTION_KEYS.includes("show_header"));
 });
