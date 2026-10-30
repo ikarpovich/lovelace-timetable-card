@@ -98,6 +98,7 @@ type: custom:timetable-card
 show_subject_legend: false # show subject pills below the table
 show_day_summary: false # show lesson counts below the table
 show_header: true # show the child name/tab header
+# Use boolean values (false, not "false") when entering these options manually.
 
 subjects:
   - name: Math
